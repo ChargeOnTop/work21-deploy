@@ -1,0 +1,24 @@
+# Environment
+.env
+.env.local
+.env.production
+
+# Cloned repositories
+backend/
+agent/
+
+# SSL certificates
+certbot/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
