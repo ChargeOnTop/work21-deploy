@@ -78,6 +78,20 @@ services:
       start_period: 30s
 
   # ===========================================
+  # Admin Panel (React + Refine)
+  # ===========================================
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-https://api.work-21.com/api/v1}
+    container_name: work21-admin
+    networks:
+      - work21-network
+    restart: unless-stopped
+
+  # ===========================================
   # Nginx (Reverse Proxy + SSL)
   # ===========================================
   nginx:
@@ -95,6 +109,7 @@ services:
     depends_on:
       - backend
       - agent
+      - admin
     restart: unless-stopped
 
   # ===========================================
@@ -116,4 +131,5 @@ networks:
 
 volumes:
   postgres_data:
+
 
