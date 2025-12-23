@@ -5,23 +5,27 @@
 ## Архитектура
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                      VPS Server                          │
-│                                                          │
-│  ┌─────────────────────────────────────────────────┐    │
-│  │                 Nginx (:80, :443)                │    │
-│  │         Reverse Proxy + SSL + CORS              │    │
-│  └──────────┬───────────────────┬──────────────────┘    │
-│             │                   │                        │
-│       /api/*              /agent/*                       │
-│             │                   │                        │
-│  ┌──────────▼────────┐ ┌───────▼──────────────┐         │
-│  │   Backend API     │ │    AI Agent          │         │
-│  │   FastAPI :8000   │ │    FastAPI :8080     │         │
-│  │   + PostgreSQL    │ │    + GigaChat        │         │
-│  └───────────────────┘ └──────────────────────┘         │
-│                                                          │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                         VPS Server (217.60.0.86)                  │
+│                                                                   │
+│  ┌───────────────────────────────────────────────────────────┐   │
+│  │                   Nginx (:80, :443)                        │   │
+│  │              Reverse Proxy + SSL + CORS                    │   │
+│  └─────┬─────────────────┬────────────────────┬──────────────┘   │
+│        │                 │                    │                   │
+│   api.work-21.com   api.work-21.com     admin.work-21.com        │
+│      /api/*           /agent/*               /*                   │
+│        │                 │                    │                   │
+│  ┌─────▼──────┐   ┌──────▼───────┐   ┌───────▼─────────┐        │
+│  │  Backend   │   │   AI Agent   │   │   Admin Panel   │        │
+│  │  FastAPI   │   │   FastAPI    │   │   React+Refine  │        │
+│  │   :8000    │   │    :8080     │   │      :80        │        │
+│  │ PostgreSQL │   │   GigaChat   │   │                 │        │
+│  └────────────┘   └──────────────┘   └─────────────────┘        │
+│                                                                   │
+└──────────────────────────────────────────────────────────────────┘
+
+Frontend: work-21.com (BroJS Platform)
 ```
 
 ## Быстрый старт
@@ -44,6 +48,7 @@ nano .env
 POSTGRES_PASSWORD=ВашСильныйПароль123!
 SECRET_KEY=сгенерируйте_openssl_rand_hex_32
 GIGACHAT_API_KEY=ваш_ключ_от_sber
+VITE_API_URL=https://api.work-21.com/api/v1
 ```
 
 ### 3. Запуск
@@ -53,17 +58,28 @@ chmod +x deploy.sh
 ./deploy.sh
 ```
 
-### 4. Проверка
+### 4. Создание администратора (первый запуск)
+
+```bash
+docker exec -it work21-backend python scripts/create_admin.py
+```
+
+Будет создан админ: `admin@work21.ru` / `SecureAdminPass123!`
+
+### 5. Проверка
 
 ```bash
 # Health check
-curl http://YOUR_VPS_IP/health
+curl https://api.work-21.com/health
 
 # Backend API
-curl http://YOUR_VPS_IP/api/v1/
+curl https://api.work-21.com/api/v1/
 
 # Agent API
-curl http://YOUR_VPS_IP/agent/api/v1/llm/health
+curl https://api.work-21.com/agent/api/v1/llm/health
+
+# Admin Panel
+open https://admin.work-21.com
 ```
 
 ## Структура проекта
@@ -75,8 +91,10 @@ work21-deploy/
 │   └── nginx.conf        # Конфигурация Nginx
 ├── .env.example          # Пример переменных
 ├── deploy.sh             # Скрипт деплоя
+├── update.sh             # Скрипт обновления
 ├── backend/              # (клонируется автоматически)
-└── agent/                # (клонируется автоматически)
+├── agent/                # (клонируется автоматически)
+└── admin/                # (клонируется автоматически)
 ```
 
 ## Команды
@@ -94,19 +112,26 @@ docker compose logs -f
 # Логи конкретного сервиса
 docker compose logs -f backend
 docker compose logs -f agent
+docker compose logs -f admin
 docker compose logs -f nginx
 
 # Перезапуск
 docker compose restart
 
 # Обновление кода
-cd backend && git pull && cd ..
-cd agent && git pull && cd ..
-docker compose up -d --build
+./update.sh
 
 # Статус
 docker compose ps
 ```
+
+## DNS настройки (Cloudflare)
+
+| Type | Name | Content | Proxy |
+|------|------|---------|-------|
+| A | api | 217.60.0.86 | ☁️ Proxied |
+| A | admin | 217.60.0.86 | ☁️ Proxied |
+| A | @ | (BroJS) | - |
 
 ## Настройка BroJS
 
@@ -114,16 +139,16 @@ docker compose ps
 
 | Ключ | Значение |
 |------|----------|
-| `work21-fr.api` | `http://YOUR_VPS_IP/api` |
-| `work21-fr.api.estimator` | `http://YOUR_VPS_IP/agent` |
+| `work21-fr.api` | `https://api.work-21.com/api` |
+| `work21-fr.api.estimator` | `https://api.work-21.com/agent` |
 
 ## SSL сертификаты (HTTPS)
 
-### 1. Настройте домен
+SSL автоматически обрабатывается Cloudflare при включенном Proxy.
 
-Добавьте A-запись: `your-domain.com` → `YOUR_VPS_IP`
+Для прямого SSL (без Cloudflare):
 
-### 2. Получите сертификат
+### 1. Получите сертификат
 
 ```bash
 # Остановите nginx
@@ -133,16 +158,12 @@ docker compose stop nginx
 docker run --rm -p 80:80 \
   -v $(pwd)/certbot/conf:/etc/letsencrypt \
   certbot/certbot certonly --standalone \
-  -d your-domain.com \
+  -d api.work-21.com -d admin.work-21.com \
   --email your@email.com \
   --agree-tos --no-eff-email
 ```
 
-### 3. Обновите nginx.conf
-
-Раскомментируйте HTTPS блок и замените `your-domain.com` на ваш домен.
-
-### 4. Перезапустите
+### 2. Перезапустите
 
 ```bash
 docker compose up -d
@@ -169,11 +190,16 @@ docker compose logs db
 docker compose exec db psql -U work21 -d work21
 ```
 
+### Админка не грузится
+```bash
+docker compose logs admin
+docker compose up -d --build admin
+```
+
 ## Репозитории
 
 - **Frontend:** https://github.com/ChargeOnTop/work21-fr
 - **Backend:** https://github.com/ChargeOnTop/work21-backend
 - **Agent:** https://github.com/ChargeOnTop/work21-agent
+- **Admin:** https://github.com/ChargeOnTop/work21-admin
 - **Deploy:** https://github.com/ChargeOnTop/work21-deploy
-
-

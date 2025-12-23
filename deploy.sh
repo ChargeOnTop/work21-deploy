@@ -55,6 +55,14 @@ else
     echo "✅ Agent обновлён"
 fi
 
+if [ ! -d "admin" ]; then
+    git clone https://github.com/ChargeOnTop/work21-admin.git admin
+    echo "✅ Admin клонирован"
+else
+    cd admin && git pull && cd ..
+    echo "✅ Admin обновлён"
+fi
+
 # ===========================================
 # 4. Создание директорий
 # ===========================================
@@ -94,10 +102,14 @@ echo "============================================"
 echo "✅ Деплой завершён!"
 echo ""
 echo "🌐 Endpoints:"
-echo "   Backend API: http://YOUR_IP/api/v1/"
-echo "   Agent API:   http://YOUR_IP/agent/api/v1/"
-echo "   Swagger:     http://YOUR_IP/docs"
-echo "   Health:      http://YOUR_IP/health"
+echo "   Backend API:  https://api.work-21.com/api/v1/"
+echo "   Agent API:    https://api.work-21.com/agent/api/v1/"
+echo "   Admin Panel:  https://admin.work-21.com/"
+echo "   Swagger:      https://api.work-21.com/docs"
+echo "   Health:       https://api.work-21.com/health"
+echo ""
+echo "👤 Создать админа (первый запуск):"
+echo "   docker exec -it work21-backend python scripts/create_admin.py"
 echo ""
 echo "📝 Команды:"
 echo "   Логи:        docker compose logs -f"
