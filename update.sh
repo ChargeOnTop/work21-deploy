@@ -14,13 +14,13 @@ echo "================================"
 echo ""
 echo "📦 Обновление кода..."
 
-cd backend && git pull && cd ..
+(cd backend && git pull)
 echo "✅ Backend обновлён"
 
-cd agent && git pull && cd ..
+(cd agent && git pull)
 echo "✅ Agent обновлён"
 
-cd admin && git pull && cd ..
+(cd admin && git pull)
 echo "✅ Admin обновлён"
 
 # Пересборка контейнеров

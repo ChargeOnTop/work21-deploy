@@ -43,7 +43,7 @@ if [ ! -d "backend" ]; then
     git clone https://github.com/ChargeOnTop/work21-backend.git backend
     echo "✅ Backend клонирован"
 else
-    cd backend && git pull && cd ..
+    (cd backend && git pull)
     echo "✅ Backend обновлён"
 fi
 
@@ -51,7 +51,7 @@ if [ ! -d "agent" ]; then
     git clone https://github.com/ChargeOnTop/work21-agent.git agent
     echo "✅ Agent клонирован"
 else
-    cd agent && git pull && cd ..
+    (cd agent && git pull)
     echo "✅ Agent обновлён"
 fi
 
@@ -59,7 +59,7 @@ if [ ! -d "admin" ]; then
     git clone https://github.com/ChargeOnTop/work21-admin.git admin
     echo "✅ Admin клонирован"
 else
-    cd admin && git pull && cd ..
+    (cd admin && git pull)
     echo "✅ Admin обновлён"
 fi
 
