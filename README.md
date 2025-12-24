@@ -199,7 +199,7 @@ docker compose up -d --build admin
 ## Репозитории
 
 - **Frontend:** https://github.com/ChargeOnTop/work21-fr
-- **Backend:** https://github.com/ChargeOnTop/work21-backend
-- **Agent:** https://github.com/ChargeOnTop/work21-agent
-- **Admin:** https://github.com/ChargeOnTop/work21-admin
+- **Backend:** https://github.com/oinuritto/work21-backend
+- **Agent:** https://github.com/Daimnedope/work21-agents
+- **Admin:** https://github.com/Daimnedope/work21-admins
 - **Deploy:** https://github.com/ChargeOnTop/work21-deploy

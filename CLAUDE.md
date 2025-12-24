@@ -59,8 +59,9 @@ git clone https://github.com/ChargeOnTop/work21-deploy.git
 cd work21-deploy
 
 # 2. Клонировать сервисы
-git clone https://github.com/ChargeOnTop/work21-backend.git backend
-git clone https://github.com/ChargeOnTop/work21-agent.git agent
+git clone https://github.com/oinuritto/work21-backend.git backend
+git clone https://github.com/Daimnedope/work21-agents.git agent
+git clone https://github.com/Daimnedope/work21-admins.git admin
 
 # 3. Настроить переменные
 cp .env.example .env
@@ -160,8 +161,9 @@ cat backup.sql | docker compose exec -T db psql -U work21 work21
 
 ## Связанные репозитории
 
-- **Backend:** https://github.com/ChargeOnTop/work21-backend
-- **AI Agent:** https://github.com/ChargeOnTop/work21-agent
+- **Backend:** https://github.com/oinuritto/work21-backend
+- **AI Agent:** https://github.com/Daimnedope/work21-agents
+- **Admin Panel:** https://github.com/Daimnedope/work21-admins
 - **Frontend:** https://github.com/ChargeOnTop/work21-fr
 
 ## Production URLs

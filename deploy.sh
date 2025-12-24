@@ -40,7 +40,7 @@ echo ""
 echo "📥 Клонирую репозитории..."
 
 if [ ! -d "backend" ]; then
-    git clone https://github.com/ChargeOnTop/work21-backend.git backend
+    git clone https://github.com/oinuritto/work21-backend.git backend
     echo "✅ Backend клонирован"
 else
     (cd backend && git pull)
@@ -48,7 +48,7 @@ else
 fi
 
 if [ ! -d "agent" ]; then
-    git clone https://github.com/ChargeOnTop/work21-agent.git agent
+    git clone https://github.com/Daimnedope/work21-agents.git agent
     echo "✅ Agent клонирован"
 else
     (cd agent && git pull)
@@ -56,7 +56,7 @@ else
 fi
 
 if [ ! -d "admin" ]; then
-    git clone https://github.com/ChargeOnTop/work21-admin.git admin
+    git clone https://github.com/Daimnedope/work21-admins.git admin
     echo "✅ Admin клонирован"
 else
     (cd admin && git pull)
